@@ -27,9 +27,16 @@ routes.php           # loaded by FeedbackBundle::register() via loadRoutesFrom()
 
 ## Releasing a new version
 
-1. Bump `version` in `bundle.json`.
-2. Tag the commit `vX.Y.Z` (matching `bundle.json`) and push the tag.
-3. `.github/workflows/release.yml` creates the GitHub Release automatically — Kintai's installer reads its `zipball_url` directly, nothing else to build or upload.
+`main`, `alpha`, and `beta` are protected branches — no direct push. Releases
+are cut by opening a PR into the target channel branch and merging it once CI
+is green; you never tag or run `gh release create` by hand. See
+[CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md#release-process)
+for the full flow.
+
+1. Bump `version` in `bundle.json` by hand only when opening a new `X.Y` line.
+2. Add your changes to `CHANGELOG.md` under `## [Unreleased]`.
+3. Open a PR targeting `alpha` (new work), `beta`, or `main`, and merge it once CI passes.
+4. `.github/workflows/release.yml` computes the tag (`vX.Y.Z` on alpha/beta, `vX.Y.0` on main) and creates the GitHub Release automatically — Kintai's installer reads its `zipball_url` directly, nothing else to build or upload.
 
 ## License
 
@@ -51,9 +58,16 @@ L'installation manuelle n'est pas prise en charge : Kintai ne fait jamais de `gi
 
 ### Publier une nouvelle version
 
-1. Incrémenter `version` dans `bundle.json`.
-2. Tagger le commit `vX.Y.Z` (correspondant à `bundle.json`) et pousser le tag.
-3. `.github/workflows/release.yml` crée automatiquement la GitHub Release — l'installeur de Kintai lit directement son `zipball_url`, rien d'autre à construire ni à uploader.
+`main`, `alpha` et `beta` sont des branches protégées — pas de push direct.
+Les releases sont publiées en ouvrant une PR vers la branche de canal visée
+et en la mergeant une fois la CI verte ; on ne tague ni ne lance
+`gh release create` à la main. Voir [CONTRIBUTING.md](CONTRIBUTING.md) et
+[CLAUDE.md](CLAUDE.md#release-process) pour le détail du flux.
+
+1. Incrémenter `version` dans `bundle.json` à la main, uniquement à l'ouverture d'une nouvelle ligne `X.Y`.
+2. Ajouter les changements dans `CHANGELOG.md` sous `## [Unreleased]`.
+3. Ouvrir une PR vers `alpha` (travail courant), `beta`, ou `main`, et la merger une fois la CI verte.
+4. `.github/workflows/release.yml` calcule le tag (`vX.Y.Z` sur alpha/beta, `vX.Y.0` sur main) et crée automatiquement la GitHub Release — l'installeur de Kintai lit directement son `zipball_url`, rien d'autre à construire ni à uploader.
 
 ### Licence
 
