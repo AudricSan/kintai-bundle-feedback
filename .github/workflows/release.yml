@@ -1,0 +1,41 @@
+name: Release
+
+# Publie une GitHub Release à chaque tag vX.Y.Z poussé sur ce dépôt.
+#
+# BundleInstallerService (côté Kintai) résout la release via l'API GitHub
+# (releases/tags/v{version}) et télécharge son zipball_url — un champ calculé
+# par GitHub à partir du commit taggé, jamais un artefact uploadé ici. Ce
+# workflow n'a donc rien à construire : il crée juste la Release elle-même,
+# condition pour que ce zipball_url existe.
+#
+# Le tag doit être créé et poussé à la main (ou via `gh release create` qui
+# le crée pour vous) après avoir bumpé "version" dans bundle.json.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifie que bundle.json annonce bien cette version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          JSON_VERSION=$(php -r "echo json_decode(file_get_contents('bundle.json'), true)['version'];")
+          if [ "$TAG" != "$JSON_VERSION" ]; then
+            echo "Le tag ($GITHUB_REF_NAME) ne correspond pas à bundle.json (version: $JSON_VERSION)" >&2
+            exit 1
+          fi
+
+      - name: Créer la GitHub Release
+        run: gh release create "${{ github.ref_name }}" --title "${{ github.ref_name }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
