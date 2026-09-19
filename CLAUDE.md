@@ -5,11 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this repository is
 
 This is the standalone distribution repo for the official "Feedback" bundle of
-[Kintai](https://github.com/AudricSan/Kintai). It used to live inside the main
-Kintai monorepo at `src/Bundles/Feedback/` and was extracted so it can be
-installed independently, the same way any third-party bundle would be (see
-`docs/creating-a-bundle.md` in the main Kintai repo for the full bundle
-distribution model — manifest, registry, installer).
+[Kintai](https://github.com/AudricSan/Kintai), distributed independently the
+same way any third-party bundle would be (see `docs/creating-a-bundle.md` in
+the main Kintai repo for the full bundle distribution model — manifest,
+registry, installer).
 
 There is no build or test suite in this repo (no `composer.json`, no
 PHPUnit). The code is not runnable or functionally testable standalone: every
@@ -91,13 +90,12 @@ and pushes the tag itself — never tag or `gh release create` by hand:
   store managers who hold `feedbacks.view` (looked up manually per-user via
   `PermissionService::can()`, not a role check). Also serves the "past shifts"
   dropdown used by the submission modal.
-- `src/Controllers/Api/FeedbackController.php` — REST CRUD. Its docblock
-  references an RBAC audit fix (mirrors `ShiftSwapRequestController` in Core):
-  unscoped `index()` used to leak all stores' feedback to any token holder.
-  The current code always restricts `index()` results via
-  `PermissionService::restrictToScope()` and single-item access via
-  `requireOwnedResource()` — follow this pattern for any new bundle API
-  endpoint rather than calling repository methods directly.
+- `src/Controllers/Api/FeedbackController.php` — REST CRUD. Always restricts
+  `index()` results via `PermissionService::restrictToScope()` and
+  single-item access via `requireOwnedResource()` — follow this pattern for
+  any new bundle API endpoint rather than calling repository methods
+  directly (an unscoped `index()` would leak every store's feedback to any
+  token holder).
 - `Views/feedbacks.php` — admin list view, registered under the `feedback::`
   view namespace (so it's referenced from controllers as `feedback::feedbacks`).
 - `lang/{en,fr,ja}.json` — bundle-scoped translation keys, merged into
