@@ -47,6 +47,7 @@ final class FeedbackBundle extends Bundle
         $this->registerServices();
         $this->loadViewsFrom($this->getPath() . '/Views', 'feedback');
         $this->loadRoutesFrom($this->getPath() . '/routes.php');
+        $this->loadAssetsFrom('public');
     }
 
     private function registerServices(): void
