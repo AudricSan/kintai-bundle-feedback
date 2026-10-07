@@ -8,6 +8,10 @@ Le schéma de version (X.Y.Z, canaux alpha/beta/main) est décrit dans
 
 ## [Unreleased]
 
+### Fixed
+
+- Sécurité — `POST /api/v1/feedbacks` fusionnait le JSON brut du client dans `save()` (upsert dès qu'un `id` est présent) : un `id` écrasait le feedback de quelqu'un d'autre, et `user_id`/`store_id` étaient pris tels quels. L'auteur est maintenant toujours l'appelant, qui doit être membre du magasin (ou le gérer), et seuls `shift_id`, `category`, `rating`, `message`, `anonymous`, `page_path`, `app_version` et `device_type` sont lus. `PUT` ne modifie plus que `category`, `rating`, `message` et `anonymous`.
+
 ### Changed
 
 - Garde-fou contre les handlers inline, en prévision de la Content-Security-Policy stricte de Kintai Core 0.3.0 (`script-src 'self' 'nonce-…'`, sans `'unsafe-inline'`) : `tests.yml` échoue désormais si un attribut `onclick=`/`onchange=`/`onsubmit=`/`oninput=`, un lien `javascript:` ou un `<script>` sans nonce apparaît dans `Views/` ou `src/` — le navigateur les bloquerait en silence, sans aucune erreur côté serveur. **Aucun changement fonctionnel** : les vues de ce bundle n'utilisent déjà aucun handler inline ni `<script>` inline exécutable. La règle est documentée dans `CONTRIBUTING.md` et `CLAUDE.md`.
