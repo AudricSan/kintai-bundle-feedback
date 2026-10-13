@@ -10,6 +10,7 @@ Le schéma de version (X.Y.Z, canaux alpha/beta/main) est décrit dans
 
 ### Fixed
 
+- Sécurité — `return_to` du formulaire de retour acceptait `/\evil.example` (lu comme `//evil.example` par les navigateurs) : redirection ouverte après l'envoi. L'antislash et les caractères de contrôle sont désormais refusés.
 - Sécurité — `POST /api/v1/feedbacks` fusionnait le JSON brut du client dans `save()` (upsert dès qu'un `id` est présent) : un `id` écrasait le feedback de quelqu'un d'autre, et `user_id`/`store_id` étaient pris tels quels. L'auteur est maintenant toujours l'appelant, qui doit être membre du magasin (ou le gérer), et seuls `shift_id`, `category`, `rating`, `message`, `anonymous`, `page_path`, `app_version` et `device_type` sont lus. `PUT` ne modifie plus que `category`, `rating`, `message` et `anonymous`.
 
 ### Changed

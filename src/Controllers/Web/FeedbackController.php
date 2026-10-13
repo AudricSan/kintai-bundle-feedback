@@ -66,7 +66,10 @@ final class FeedbackController
 
         $returnTo = trim((string) $request->post('return_to', ''));
         // Valider que le chemin ne sort pas du domaine (commence par / et ne contient pas //)
-        if ($returnTo === '' || !str_starts_with($returnTo, '/') || str_contains($returnTo, '//')) {
+        // Chemin interne uniquement. L'antislash et les caractères de contrôle sont refusés : `/\evil.example`
+        // passait le test précédent, et les navigateurs le lisent comme `//evil.example`.
+        if ($returnTo === '' || !str_starts_with($returnTo, '/') || str_contains($returnTo, '//')
+            || str_contains($returnTo, '\\') || preg_match('/[\x00-\x1F\x7F]/', $returnTo) === 1) {
             $returnTo = $this->base() . '/';
         }
 
